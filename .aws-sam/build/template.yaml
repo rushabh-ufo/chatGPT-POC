@@ -1,0 +1,65 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: chatGPT-POC
+Transform:
+- AWS::Serverless-2016-10-31
+Resources:
+  GetChatGPTPromptFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/get-chat-gpt-prompt.lambdaHandler
+      Runtime: nodejs16.x
+      Architectures:
+      - x86_64
+      MemorySize: 128
+      Timeout: 300
+      Description: A function that returns the response from the chat prompt
+      Policies:
+      - Version: '2012-10-17'
+        Statement:
+        - Action: secretsmanager:GetSecretValue
+          Effect: Allow
+          Resource:
+            Ref: ChatGPTSecret
+      Environment:
+        Variables:
+          SECRET_NAME:
+            Ref: ChatGPTSecret
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /getPrompt
+            Method: POST
+      CodeUri: GetChatGPTPromptFunction
+    Metadata:
+      SamResourceId: GetChatGPTPromptFunction
+  ChatGPTSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      Name: ChatGPT_Secret
+      Tags:
+      - Key: App
+        Value: chatGPT-POC
+  ApplicationResourceGroup:
+    Type: AWS::ResourceGroups::Group
+    Properties:
+      Name:
+        Fn::Sub: ApplicationInsights-SAM-${AWS::StackName}
+      ResourceQuery:
+        Type: CLOUDFORMATION_STACK_1_0
+  ApplicationInsightsMonitoring:
+    Type: AWS::ApplicationInsights::Application
+    Properties:
+      ResourceGroupName:
+        Ref: ApplicationResourceGroup
+      AutoConfigurationEnabled: 'true'
+Outputs:
+  WebEndpoint:
+    Description: API Gateway endpoint URL for Prod stage
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/
+Globals:
+  Function:
+    Tracing: Active
+  Api:
+    TracingEnabled: true
