@@ -77,3 +77,6 @@ The application template uses AWS SAM to define application resources. AWS SAM i
 ```bash
 my-application$ sam deploy
 ```
+
+## Add chat-gpt key
+I have added AWS secret manager to save the chat-gpt API key as a secret value. Right now I have not added the code to populate the key dynamically in the secret manager. You have to add the key in the AWS SecretManager manually.
