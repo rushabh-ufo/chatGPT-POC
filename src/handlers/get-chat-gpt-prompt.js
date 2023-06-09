@@ -5,7 +5,7 @@ AWS.config.update({region: 'us-east-1'});
 exports.lambdaHandler = async (event) => {
     try {
         const input = JSON.parse(event.body);
-        const chatGPTSecret = await exports.get_secret_from_secretsmanager();
+        const chatGPTSecret = await exports.getSecretFromSecretsManager();
         const openai = await exports.getOpenAIObject(chatGPTSecret);
         const gptResponse = await exports.getChatGPTPrompt(openai, input);
         console.log(gptResponse);
@@ -22,7 +22,7 @@ exports.lambdaHandler = async (event) => {
     }
 }
 
-exports.get_secret_from_secretsmanager = async () => {
+exports.getSecretFromSecretsManager = async () => {
     const secretsmanager = new AWS.SecretsManager();
     const params = {
         SecretId: process.env.SECRET_NAME
