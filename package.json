@@ -1,6 +1,6 @@
 {
-    "name": "delete-test-01",
-    "description": "delete-test-01-description",
+    "name": "chatGPT-POC",
+    "description": "chatGPT-POC-description",
     "version": "0.0.1",
     "private": true,
     "dependencies": {
